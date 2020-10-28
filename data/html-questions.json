@@ -1,32 +1,52 @@
 [
     {
-        "question": "Which is red?",
+        "question": "Commonly used data types DO NOT include:",
         "answers": [
-            "red",
-            "blue",
-            "yellow",
-            "green"
-        ],
-        "correctAnswer": 0
-    },
-    {
-        "question": "Which is blue?",
-        "answers": [
-            "red",
-            "blue",
-            "yellow",
-            "green"
-        ],
-        "correctAnswer": 1
-    },
-    {
-        "question": "Which is yellow?",
-        "answers": [
-            "red",
-            "blue",
-            "yellow",
-            "green"
+            "strings",
+            "booleans",
+            "alerts",
+            "numbers"
         ],
         "correctAnswer": 2
+    },
+    {
+        "question": "The condition in an if / else statement is enclosed with ________.",
+        "answers": [
+            "quotes",
+            "curley brackets",
+            "parenthesis",
+            "square brackets"
+        ],
+        "correctAnswer": 2
+    },
+    {
+        "question": "Arrays in Javascript can be used to store ________.",
+        "answers": [
+            "numbers and strings",
+            "other arrays",
+            "booleans",
+            "all of the above"
+        ],
+        "correctAnswer": 3
+    },
+    {
+        "question": "String values must be enclosed within ________ when being assigned to variables.",
+        "answers": [
+            "commas",
+            "curley brackets",
+            "quotes",
+            "parenthesis"
+        ],
+        "correctAnswer": 2
+    },
+    {
+        "question": "A very useful tool used during development and debugging for printing content to the debugger is:",
+        "answers": [
+            "JavaScript",
+            "terminal/bash",
+            "for loops",
+            "console.log"
+        ],
+        "correctAnswer": 3
     }
 ]

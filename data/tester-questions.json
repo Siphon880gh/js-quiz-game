@@ -1,0 +1,32 @@
+[
+    {
+        "question": "Which is red?",
+        "answers": [
+            "red",
+            "blue",
+            "yellow",
+            "green"
+        ],
+        "correctAnswer": 0
+    },
+    {
+        "question": "Which is blue?",
+        "answers": [
+            "red",
+            "blue",
+            "yellow",
+            "green"
+        ],
+        "correctAnswer": 1
+    },
+    {
+        "question": "Which is yellow?",
+        "answers": [
+            "red",
+            "blue",
+            "yellow",
+            "green"
+        ],
+        "correctAnswer": 2
+    }
+]
