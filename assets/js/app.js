@@ -18,6 +18,8 @@ console.log("Connected JS file");
  * @class       App
  * @classdesc   MVC pattern. TODO: Industry Standards; Is this how a MVC pattern is implemented? Find out once we reach lessons on MVC pattern.
  * 
+ * @method      renderQuestion  render question in order
+ * 
  */
 class App {
     constructor() {
@@ -34,25 +36,41 @@ class App {
     }
 
     controllers = {
+        restartQuestions: function() {
+            app.model.questionPointer = 0;
+        },
+
         // Todo: Review; Tricky; New to this; Handlebar takes in a template, makes it into a function, then that function receives data to render the template
+        // Todo: Review; Sugar Syntax; Plucking from an object, aka destructuring object
         renderQuestion: function() {
-            var template = app.views.question;
-            var parameterizedTemplate = Handlebars.compile(template);
-            var model = app.models.questions[0];
-            var generatedHTML = parameterizedTemplate(model);
-            document.querySelector(".content").innerHTML = generatedHTML;
+            // Where we are in the questions
+            var {questionPointer, questions} = app.models;
+            if(questionPointer < questions.length) {
+                app.models.questionPointer++;
+
+                // Handlebar JS
+                var template = app.views.question;
+                var parameterizedTemplate = Handlebars.compile(template);
+                var model = questions[questionPointer];
+                model.questionId = questionPointer;
+                var generatedHTML = parameterizedTemplate(model);
+                document.querySelector(".content").innerHTML = generatedHTML;
+            } else {
+                alert("Finished questions!");
+            }
         }
     }
 
     models = {
         lastAnswered: "",
+        questionPointer: 0,
         questions: {}
     }
 
     // Todo: Review; Tricky; New to this; Handlebar template with array and custom helper
     views = {
         "question": `
-            <div class="question">
+            <div class="question" data-question-id={{questionId}}>
                 <h1>{{question}}</h1>
                 <div class="form-group">
                 {{#each answers}}
