@@ -39,6 +39,10 @@ class App {
         restartQuestions: function() {
             app.model.questionPointer = 0;
         },
+        
+        renderStart: function() {
+            alert("Starting...");
+        },
 
         // Todo: Review; Tricky; New to this; Handlebar takes in a template, makes it into a function, then that function receives data to render the template
         // Todo: Review; Sugar Syntax; Plucking from an object, aka destructuring object
@@ -77,12 +81,45 @@ class App {
                     }
                 });
                 
-                document.querySelector(".content").innerHTML = "";
+                document.querySelector(".content").innerHTML = ""; // Reset HTML
                 document.querySelector(".content").append(nodes);
             } else {
-                alert("Finished questions!");
+                app.controllers.renderFinished1of2();
             }
-        }
+        }, // renderQuestion
+        
+        renderFinished1of2() {
+            // Handlebar JS
+            var template = app.views.finished1of2;
+            var parameterizedTemplate = Handlebars.compile(template);
+            var generatedHtml = parameterizedTemplate({score:10});
+            var nodes = Internal.htmlToDom(generatedHtml);
+            nodes.querySelector("button").addEventListener("click", ()=>{
+                app.controllers.renderFinished2of2();
+            });
+
+            document.querySelector(".content").innerHTML = "";
+            document.querySelector(".content").append(nodes);
+        },
+        renderFinished2of2() {
+            // Handlebar JS
+            var template = app.views.finished2of2;
+            var parameterizedTemplate = Handlebars.compile(template);
+            var generatedHtml = parameterizedTemplate({highScore:20});
+            var nodes = Internal.htmlToDom(generatedHtml);
+
+            nodes.querySelector("button.go-back").addEventListener("click", ()=>{
+                app.controllers.renderStart();
+            });
+
+            nodes.querySelector("button.clear-high-scores").addEventListener("click", ()=>{
+                // app.controllers.renderStart();
+                alert("Coming soon!");
+            });
+
+            document.querySelector(".content").innerHTML = "";
+            document.querySelector(".content").append(nodes);
+        },
     }
 
     models = {
@@ -93,6 +130,8 @@ class App {
 
     // Todo: Review; Tricky; New to this; Handlebar template with array and custom helper
     views = {
+        "start": `
+        `,
         "question": `
             <div class="question" data-question-id={{questionId}}>
                 <h1>{{question}}</h1>
@@ -102,7 +141,26 @@ class App {
                 {{/each}}
                 </div>
                 <hr>
-                <span class="text-feedback">{{wasICorrect}}</span>
+                <span class="was-i-correct">{{wasICorrect}}</span>
+            </div>
+        `,
+        "finished1of2": `
+            <div class="finished1of2">
+                <h1>All done!</h1>
+                <p>Your final score is <span class="score">{{score}}</span></p>
+                <p>Enter initials: <input type="text"></input> <button class="btn btn-primary display-inline">Submit</button></p>
+                <hr>
+                <span class="was-i-correct">{{wasICorrect}}</span>
+            </div>
+        `,
+        "finished2of2": `
+            <div class="finished2of2">
+                <h1>High scores</h1>
+                <div class="high-score">{{highScore}}</div>
+                <div class="form-group">
+                    <button class="go-back btn btn-primary display-inline">Go back</button>
+                    <button class="clear-high-scores btn btn-primary display-inline">Clear high scores</button>
+                </div>
             </div>
         `
     }

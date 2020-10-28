@@ -1,11 +1,11 @@
 /* Test CSS */
 /* line 2, scss/index.scss */
 body::after {
-  content: "Connected CSS";
+  content: "";
 }
 
 /* Reset CSS */
-/* line 7, scss/index.scss */
+/* line 8, scss/index.scss */
 :root {
   box-sizing: border-box;
   margin: 0;
@@ -13,28 +13,28 @@ body::after {
 }
 
 /* Color theme */
-/* line 14, scss/index.scss */
+/* line 15, scss/index.scss */
 :root {
   --theme: #361C74;
   --complement: #D9D3E9;
   --grab_attention: #BD60E7;
+  --highlight: #D9D2E8;
 }
 
 /* Utility classes */
-/* line 21, scss/index.scss */
+/* line 23, scss/index.scss */
 .display-block {
   display: block;
 }
 
-/* line 24, scss/index.scss */
-.display-inline-block {
-  display: inline-block;
+/* line 26, scss/index.scss */
+.display-inline {
+  display: inline;
 }
 
 /* General UI */
-/* line 29, scss/index.scss */
+/* line 31, scss/index.scss */
 .btn-primary {
-  width: 150px;
   margin: 10px 0;
   border-color: var(--theme) !important;
   background-color: var(--theme) !important;
@@ -43,20 +43,87 @@ body::after {
   text-align: left;
 }
 
-/* line 38, scss/index.scss */
+/* line 39, scss/index.scss */
 .btn-primary:hover, .btn-primary:active, .btn-primary:visited, .btn-primary:focus, .btn-primary:focus-within, .btn-primary:link {
   background-color: var(--grab_attention) !important;
   border-color: var(--grab_attention) !important;
 }
 
-/* Question */
-/* line 44, scss/index.scss */
+/* Corner layouts */
+/* line 45, scss/index.scss */
+.top-left {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+}
+/* line 49, scss/index.scss */
+.top-left a, .top-left a:visited {
+  color: var(--grab_attention);
+}
+/* line 52, scss/index.scss */
+.top-left a:hover, .top-left a:active {
+  color: var(--theme);
+}
+
+/* line 57, scss/index.scss */
+.top-right {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}
+
+/* line 62, scss/index.scss */
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  height: 100vh;
+}
+/* line 69, scss/index.scss */
+.content > * {
+  flex: 1 100%;
+  max-height: 350px;
+  margin: 0 auto;
+}
+
+/* Question and Finished slides */
+/* line 77, scss/index.scss */
+.was-i-correct {
+  color: lightgray;
+  font-style: italic;
+}
+
+/* Question slide */
+/* line 84, scss/index.scss */
 .question hr {
   margin: 20px 0 10px 0;
 }
+/* line 87, scss/index.scss */
+.question .btn {
+  width: 150px;
+}
 
-/* line 47, scss/index.scss */
-.question .text-feedback {
-  color: lightgray;
-  font-style: italic;
+/* Finished 1of2 slide */
+/* line 94, scss/index.scss */
+.finished1of2 .btn {
+  margin: 0;
+  padding: 3.5px 7px;
+}
+
+/* Finished 2of2 slide */
+/* line 101, scss/index.scss */
+.finished2of2 {
+  width: 450px;
+}
+/* line 104, scss/index.scss */
+.finished2of2 .btn {
+  margin: 0;
+  padding: 3.5px 7px;
+}
+/* line 108, scss/index.scss */
+.finished2of2 .high-score {
+  background-color: var(--highlight);
+  margin: 10px 0;
+  padding: 5px;
 }
