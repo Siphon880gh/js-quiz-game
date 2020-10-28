@@ -4,7 +4,9 @@
  *  dependencies: handlebar.js, moment.js
  *  control flow: App is initialized. 
  *                Timer has to be initialized inside App because App loads the questions and the total time for the quiz depends on how many questions there are.
- *  
+ *                Internal is a collection of methods that are used by other classes.
+ *
+ *  async flow:   ScoreSystem is a collection of methods to load and save high scores with player abbreviations
  * 
  * @author assigned to Weng Fei Fung
  */
@@ -272,6 +274,79 @@ class TimerSystem {
     }
 
 } // TimerSystem
+
+/**
+ * 
+ * Saves highest scores and players on the current machine using localStorage. Uses a sort algorithm to put the highest ranking on the first array elements
+ * 
+ * @class ScoreSystem
+ */
+var ScoreSystem = {
+    clearScores: function() {
+        localStorage.removeItem("scores");
+    },
+    
+    /**
+     * Get player with the highest score
+     * 
+     * @method getHighest
+     * @returns {object}    object.name     {string}    Example: WFF
+     *                      object.score    {int}       Example: 70
+     */
+    getHighest: function() {
+        // Todo: Review; Tricky localStorage always stores as a string, so arrays need to be converted back and forth as JSON!
+        var scoresArray = localStorage.getItem("scores");
+        if(scoresArray) {
+            var array= JSON.parse(scoresArray)
+            return array[0];
+        }
+    },
+
+    /**
+     * 
+     * @param {string}  playerName   Player name, as an abbreviation with max 3 character length
+     * @param {integer} score       The score 
+     */
+    setScore: function(playerName, playerScore) {
+        // Try to load the old score
+        var scoresArray = localStorage.getItem("scores");
+        
+        // Filter the scores by including all other players, and if the player was previously recorded, then it will depend on whether he beat his/her old score
+        // Todo: Review; Fundamental; Functional JS leverages array methods such as map, filter, and reduce
+        if(scoresArray) {
+            scoresArray = JSON.parse(scoresArray);
+            var playerOldScoreWasHigher = false;
+            
+            scoresArray.filter(cell => {
+                if(cell.name!==playerName) return true;
+                else if(cell.name===playerName && cell.score > playerScore) {
+                    playerOldScoreWasHigher = true;
+                    return true;
+                }
+            });
+
+            // If player was previously recorded and he did not beat his old score, there's no need to override or set his old score, so skip out of the function
+            if(playerOldScoreWasHigher) return;
+
+        } else {
+            // Init a scores array because this is the first time saving scores on this machine
+            scoresArray = [];
+        }
+
+        // Add player score to the local machine and rank them from highest to lowest
+        scoresArray.push({name:playerName, score:playerScore});
+        scoresArray = this.sort(scoresArray);
+        localStorage.setItem( "scores", JSON.stringify(scoresArray) );
+
+    }, // setScore
+
+
+    // Sort the scores array from highest to lowest score
+    sort: function(arr) {
+        return arr.sort( (cellLeft, cellRight) => cellLeft.score > cellRight.score );
+    } // sort
+
+} // ScoreSystem
 
 /**
  * Internal variables and functions for the App class
