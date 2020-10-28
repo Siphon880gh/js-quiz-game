@@ -15,6 +15,8 @@ Technology used
 - Livereload
 - Moment Library
 - Duration Plugin for Moment Library
+- Handlebar JS
+- Bootstrap
 - Weng's Quick Tester (For testing code)
 
 
