@@ -144,8 +144,9 @@ class App {
             });
 
             nodes.querySelector("button.clear-high-scores").addEventListener("click", ()=>{
-                // app.controllers.renderStart();
-                alert("Coming soon!");
+                ScoreSystem.clearScores();
+                alert("Scores cleared!");
+                document.querySelector(".high-score").textContent = "";
             });
 
             document.querySelector(".content").innerHTML = "";
@@ -315,18 +316,18 @@ var ScoreSystem = {
         // Todo: Review; Fundamental; Functional JS leverages array methods such as map, filter, and reduce
         if(scoresArray) {
             scoresArray = JSON.parse(scoresArray);
-            var playerOldScoreWasHigher = false;
+            var playerOldScoreWasHigher = false; // initially false
             
             scoresArray.filter(cell => {
-                if(cell.name!==playerName) return true;
-                else if(cell.name===playerName && cell.score > playerScore) {
+                if(cell.name!==playerName) return true; // we don't touch other players' scores that don't belong to the player
+                else if(cell.name===playerName && cell.score >= playerScore) { // we don't touch the player's old score if he/she couldn't beat it
                     playerOldScoreWasHigher = true;
                     return true;
                 }
             });
 
-            // If player was previously recorded and he did not beat his old score, there's no need to override or set his old score, so skip out of the function
-            if(playerOldScoreWasHigher) return;
+            // we don't touch the player's old score if he/she couldn't beat it, so skip out of the function
+            if(playerOldScoreWasHigher) return false;
 
         } else {
             // Init a scores array because this is the first time saving scores on this machine
@@ -343,7 +344,11 @@ var ScoreSystem = {
 
     // Sort the scores array from highest to lowest score
     sort: function(arr) {
-        return arr.sort( (cellLeft, cellRight) => cellLeft.score > cellRight.score );
+        return arr.sort( function(cellLeft, cellRight) {
+            if(cellLeft.score > cellRight.score) return -1;
+            else if(cellLeft.score < cellRight.score) return 1;
+            else return 0; 
+        });
     } // sort
 
 } // ScoreSystem
