@@ -1,0 +1,10 @@
+{
+  "name": "ucla-code-quiz",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "watch": "concurrently 'compass watch ./' 'livereload --ignore out/'"
+  },
+  "author": "",
+  "license": "ISC"
+}

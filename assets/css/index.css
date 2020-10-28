@@ -1,0 +1,11 @@
+/* line 1, scss/index.scss */
+body::after {
+  content: "Connected CSS";
+}
+
+/* line 5, scss/index.scss */
+:root {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
