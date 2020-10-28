@@ -77,8 +77,12 @@ body {
   right: 5px;
   top: 5px;
 }
+/* line 66, scss/index.scss */
+.top-right label {
+  font-weight: normal;
+}
 
-/* line 67, scss/index.scss */
+/* line 70, scss/index.scss */
 .content {
   display: flex;
   flex-direction: column;
@@ -86,7 +90,7 @@ body {
   flex-wrap: wrap;
   height: 100vh;
 }
-/* line 74, scss/index.scss */
+/* line 77, scss/index.scss */
 .content > * {
   flex: 1 100%;
   max-height: 350px;
@@ -94,7 +98,7 @@ body {
 }
 
 /* Question and Finished slides */
-/* line 82, scss/index.scss */
+/* line 85, scss/index.scss */
 .was-i-correct {
   color: lightgray;
   font-style: italic;
@@ -103,40 +107,40 @@ body {
 }
 
 /* Start quiz slide */
-/* line 90, scss/index.scss */
+/* line 93, scss/index.scss */
 .start {
   width: var(--block-width);
   text-align: center;
 }
 
 /* Question slide */
-/* line 97, scss/index.scss */
+/* line 100, scss/index.scss */
 .question hr {
   margin: 20px 0 10px 0;
 }
-/* line 100, scss/index.scss */
+/* line 103, scss/index.scss */
 .question .btn {
   width: 150px;
 }
 
 /* Finished 1of2 slide */
-/* line 107, scss/index.scss */
+/* line 110, scss/index.scss */
 .finished1of2 .btn {
   margin: 0;
   padding: 3.5px 7px;
 }
 
 /* Finished 2of2 slide */
-/* line 114, scss/index.scss */
+/* line 117, scss/index.scss */
 .finished2of2 {
   width: var(--block-width);
 }
-/* line 117, scss/index.scss */
+/* line 120, scss/index.scss */
 .finished2of2 .btn {
   margin: 0;
   padding: 3.5px 7px;
 }
-/* line 121, scss/index.scss */
+/* line 124, scss/index.scss */
 .finished2of2 .high-score {
   background-color: var(--highlight);
   margin: 10px 0;

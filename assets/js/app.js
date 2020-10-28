@@ -1,6 +1,11 @@
 /**
- * @overview index.html opens app.js
- * @dependencies you need to load handlebar.js and moment.js first
+ * @overview app.js is all the javascript for the code quiz app
+ * 
+ *  dependencies: handlebar.js, moment.js
+ *  control flow: App is initialized. 
+ *                Timer has to be initialized inside App because App loads the questions and the total time for the quiz depends on how many questions there are.
+ *  
+ * 
  * @author assigned to Weng Fei Fung
  */
 
@@ -12,11 +17,16 @@
  */
 console.log("Connected JS file");
 
+/**
+ * 
+ * Render the first slide. Also referenced by the startSlide view for App. This has to be global because the class App is still defining while the starting slide is running.
+ * @global startSlide
+ */
 window.startSlide = `
 <div class="start">
     <h1>Coding Quiz Challenge</h1>
     <p>Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize your score/time by ten seconds!</p>
-    <button class="btn btn-primary" onclick="app.controllers.renderQuestion();">Start Quiz</button>
+    <button class="btn btn-primary" onclick="app.controllers.renderQuestion(); Internal.restartTimer();">Start Quiz</button>
 </div>
 `;
 
@@ -48,9 +58,6 @@ class App {
     }
 
     controllers = {
-        restartQuestions: function() {
-            app.models.questionPointer = 0;
-        },
         
         renderStart: function() {
             var template = app.views.startSlide;
@@ -88,9 +95,11 @@ class App {
                         var wasICorrect = Internal.checkAnswer(buttonId, questionId);
                         if(wasICorrect)
                             app.models.wasICorrect = "Correct!";
-                        else
+                        else {
                             app.models.wasICorrect = "Wrong!";
-                        
+                            timerSystem.subtractTimer(10); // Penalize by subtracting 10 seconds from timer
+                        }
+
                         // Render next question or finished slide
                         app.controllers.renderQuestion();
                     }
@@ -99,7 +108,11 @@ class App {
                 document.querySelector(".content").innerHTML = ""; // Reset HTML
                 document.querySelector(".content").append(nodes);
             } else {
-                app.controllers.renderFinished1of2();
+                // Questions are done, so let's pause the countdown timer and render the Finished slides
+                setTimeout( ()=> { 
+                    timerSystem.pauseTimer(); 
+                    app.controllers.renderFinished1of2();
+                }, 1100); // Workaround: Wait for any penalty to be applied to timer, before pausing timer
             }
         }, // renderQuestion
         
@@ -107,7 +120,7 @@ class App {
             // Handlebar JS
             var template = app.views.finished1of2;
             var parameterizedTemplate = Handlebars.compile(template);
-            var generatedHtml = parameterizedTemplate({score:10});
+            var generatedHtml = parameterizedTemplate({score: timerSystem.getSeconds()});
             var nodes = Internal.htmlToDom(generatedHtml);
             nodes.querySelector("button").addEventListener("click", ()=>{
                 app.controllers.renderFinished2of2();
@@ -124,7 +137,7 @@ class App {
             var nodes = Internal.htmlToDom(generatedHtml);
 
             nodes.querySelector("button.go-back").addEventListener("click", ()=>{
-                app.controllers.restartQuestions();
+                Internal.restartQuestions();
                 app.controllers.renderStart();
             });
 
@@ -182,6 +195,85 @@ class App {
 } // App
 
 /**
+ * 
+ * Restarts and counts down timer for the quiz. How long the timer is based on the number of questions. By the end of the quiz, the time left in seconds is the score.
+ * 
+ * @class TimerSystem
+ * 
+ */
+class TimerSystem {
+    timeLeft = 0;
+    timerEl = null;
+
+    constructor(timerEl, seconds) {
+        this.timerEl = timerEl;
+        
+        // Initial instance counting down depends on how many questions there are
+        // Store the number of seconds as moment duration object
+        this.timeLeft = moment.duration(seconds, "seconds");
+        
+        // Workaround: Avoid trimming for values less than 60 seconds
+        var timeLeftFormatted = this.timeLeft.format("mm:ss", { trim: false }); // "00:05"
+        this.timerEl.textContent = timeLeftFormatted;
+
+        // Every other instance counting down
+        if(window.timerCountingDown) clearInterval(window.timerCountingDown);
+        window.timerCountingDown = setInterval(this.countingDown.bind(this), 1000); // Workaround: *.this reference was lost
+    }
+
+    countingDown() {
+        // Decrement the number of seconds by converting the moment duration object back to integer then decrementing
+        var nextSeconds = this.timeLeft.asSeconds();
+        if(nextSeconds===0) return false;
+        nextSeconds--;
+
+        // Store the number of seconds as moment duration object
+        this.timeLeft = moment.duration(nextSeconds, "seconds");
+
+        var timeLeftFormatted = this.timeLeft.format("mm:ss", { trim: false }); // "00:05"
+        this.timerEl.textContent = timeLeftFormatted;
+    }
+
+    /**
+     * Get total number of seconds from the counting down timer. This is also the score at the end of the quiz.
+     * 
+     * @method getSeconds
+     * @returns {int}       number of seconds
+     * 
+     */
+    getSeconds() {
+        // Convert the moment duration object back to integer
+        return this.timeLeft.asSeconds();
+    }
+
+    pauseTimer() {
+        if(window.timerCountingDown) clearInterval(window.timerCountingDown);
+    }
+
+    resumeTimer() {
+        window.timerCountingDown = setInterval(this.countingDown.bind(this), 1000); // Workaround: *.this reference was lost
+    }
+
+    /**
+     * Student answers question wrong, so penalize by subtracting X number of seconds from the timer
+     * 
+     * @method subtractTimer
+     * @param {int} bySeconds The number of seconds to penalize
+     */
+    subtractTimer(bySeconds) {
+        this.pauseTimer();
+        
+        // Decrement the number of seconds by converting the moment duration object back to integer then decrementing
+        var nextSeconds = this.timeLeft.asSeconds();
+        nextSeconds -= bySeconds;
+        this.timeLeft = moment.duration(nextSeconds, "seconds");
+
+        this.resumeTimer();
+    }
+
+} // TimerSystem
+
+/**
  * Internal variables and functions for the App class
  * 
  * @object Internal
@@ -189,17 +281,16 @@ class App {
  */
 var Internal = {
 
-    /**
-     * Convert html string to DOM nodes
-     * 
-     * @function htmlToDom
-     * @param {string} html
-     * 
-     */
-    htmlToDom: function(html) {
-        // return (new DOMParser()).parseFromString(html, "text/xml");
-        // return document.createElement("div").innerHTML = html;
-        return (new DOMParser()).parseFromString(html, "text/html").body.firstChild;
+    // Todo: Review; Tricky; Handlebar JS custom helper
+    addHandlebarsHelpers: ()=> {
+        // getHumanReadableIndex converts index 0, 1, 2, etc. => To 1., 2., etc
+        Handlebars.registerHelper("getHumanReadableIndex", function(index) {
+            return parseInt(index)+1 + ".";
+        });
+
+        Handlebars.registerHelper("wasICorrect", function() {
+            return app.models.wasICorrect;
+        });
     },
 
 
@@ -218,18 +309,20 @@ var Internal = {
         var {correctAnswer} = currentQuestion;
         return buttonId === correctAnswer;
     },
-    
-    // Todo: Review; Tricky; Handlebar JS custom helper
-    addHandlebarsHelpers: ()=> {
-        // getHumanReadableIndex converts index 0, 1, 2, etc. => To 1., 2., etc
-        Handlebars.registerHelper("getHumanReadableIndex", function(index) {
-            return parseInt(index)+1 + ".";
-        });
 
-        Handlebars.registerHelper("wasICorrect", function() {
-            return app.models.wasICorrect;
-        });
+    /**
+     * Convert html string to DOM nodes
+     * 
+     * @function htmlToDom
+     * @param {string} html
+     * 
+     */
+    htmlToDom: function(html) {
+        // return (new DOMParser()).parseFromString(html, "text/xml");
+        // return document.createElement("div").innerHTML = html;
+        return (new DOMParser()).parseFromString(html, "text/html").body.firstChild;
     },
+
     readQuestionBank: (filename)=>{
         var questionBank = [];
 
@@ -251,8 +344,21 @@ var Internal = {
         xhttp.send();
         
         return questionBank;
+    },
+
+    restartQuestions: function() {
+        app.models.questionPointer = 0;
+    },
+
+    restartTimer: function() {
+        // Start timer based on how many questions there are (45 seconds a question)
+        var timerEl = document.querySelector(".clock");
+        var seconds = app.models.questions.length * 30;
+        window.timerSystem = new TimerSystem( timerEl, seconds );
+
     }
-}
+
+} // Internals
 
  /**
  * Initialize App class
@@ -260,4 +366,4 @@ var Internal = {
  * @name NewApp
  * @global
  */
-var app = new App();
+window.app = new App();
