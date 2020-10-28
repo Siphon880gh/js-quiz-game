@@ -301,6 +301,7 @@ class TimerSystem {
 var ScoreSystem = {
     clearScores: function() {
         localStorage.removeItem("scores");
+        updateRankingModal();
     },
     
     /**
@@ -354,6 +355,8 @@ var ScoreSystem = {
         scoresArray.push({name:playerName, score:playerScore});
         scoresArray = this.sort(scoresArray);
         localStorage.setItem( "scores", JSON.stringify(scoresArray) );
+
+        updateRankingModal();
 
     }, // setScore
 
@@ -444,6 +447,7 @@ var Internal = {
 
     restartQuestions: function() {
         app.models.questionPointer = 0;
+        app.models.wasICorrect = "";
     },
 
     restartTimer: function() {

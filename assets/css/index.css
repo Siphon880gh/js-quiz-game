@@ -150,3 +150,12 @@ body {
 .finished2of2 .high-score:empty {
   display: none;
 }
+
+/* Ranking Modal */
+/* line 135, scss/index.scss */
+#modal-high-scores .msg-blank-scores {
+  color: gray;
+  text-align: center;
+  font-weight: normal;
+  font-size: 20px;
+}
