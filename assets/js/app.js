@@ -12,6 +12,14 @@
  */
 console.log("Connected JS file");
 
+window.startSlide = `
+<div class="start">
+    <h1>Coding Quiz Challenge</h1>
+    <p>Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize your score/time by ten seconds!</p>
+    <button class="btn btn-primary" onclick="app.controllers.renderQuestion();">Start Quiz</button>
+</div>
+`;
+
 /**
  * Entry point for the JS code. It'll load the question bank, render different pages, and tracks scores.
  * 
@@ -28,6 +36,10 @@ class App {
         // Init Handlebar with helpers that format the answers
         Internal.addHandlebarsHelpers();
 
+        // Load first slide
+        // app.controllers.renderStart();
+        document.querySelector(".content").innerHTML = window.startSlide;
+
         // Read question bank from .json file into App model
         var questionBank = Internal.readQuestionBank("html-questions");
         // TODO: Indusry standards; Is this how unit tests, etc are performed? Find out once we reach lessons on testing 
@@ -37,11 +49,14 @@ class App {
 
     controllers = {
         restartQuestions: function() {
-            app.model.questionPointer = 0;
+            app.models.questionPointer = 0;
         },
         
         renderStart: function() {
-            alert("Starting...");
+            var template = app.views.startSlide;
+            var parameterizedTemplate = Handlebars.compile(template);
+            var generatedHtml = parameterizedTemplate({});
+            document.querySelector(".content").innerHTML = generatedHtml;
         },
 
         // Todo: Review; Tricky; New to this; Handlebar takes in a template, makes it into a function, then that function receives data to render the template
@@ -109,6 +124,7 @@ class App {
             var nodes = Internal.htmlToDom(generatedHtml);
 
             nodes.querySelector("button.go-back").addEventListener("click", ()=>{
+                app.controllers.restartQuestions();
                 app.controllers.renderStart();
             });
 
@@ -130,8 +146,7 @@ class App {
 
     // Todo: Review; Tricky; New to this; Handlebar template with array and custom helper
     views = {
-        "start": `
-        `,
+        "startSlide": window.startSlide,
         "question": `
             <div class="question" data-question-id={{questionId}}>
                 <h1>{{question}}</h1>
@@ -238,13 +253,6 @@ var Internal = {
         return questionBank;
     }
 }
-
-/**
- * Implement App class
- * 
- * @ipmlements App
- * 
- */
 
  /**
  * Initialize App class

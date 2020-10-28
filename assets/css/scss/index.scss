@@ -5,7 +5,7 @@ body::after {
 }
 
 /* Reset CSS */
-:root {
+* {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -17,6 +17,8 @@ body::after {
   --complement: #D9D3E9;
   --grab_attention: #BD60E7;
   --highlight: #D9D2E8;
+  
+  --block-width: 450px;
 }
 
 /* Utility classes */
@@ -28,6 +30,9 @@ body::after {
 }
 
 /* General UI */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
 .btn-primary {
     margin: 10px 0;
     border-color: var(--theme) !important;
@@ -77,6 +82,14 @@ body::after {
 .was-i-correct {
     color: lightgray;
     font-style: italic;
+    font-size: 18px;
+    font-weight: 300;
+}
+
+/* Start quiz slide */
+.start {
+    width: var(--block-width);
+    text-align: center;
 }
 
 /* Question slide */
@@ -99,8 +112,8 @@ body::after {
 
 /* Finished 2of2 slide */
 .finished2of2 {
-    width: 450px;
-    
+    width: var(--block-width);
+
     .btn {
         margin: 0;
         padding: 3.5px 7px;
