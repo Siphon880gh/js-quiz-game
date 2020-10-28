@@ -31,3 +31,6 @@ Screenshots
 
 ### Finishing 2 of 2
 ![Question](README/6.png)
+
+### Ranking
+![Ranking](README/rank-board.png)
