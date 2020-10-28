@@ -239,7 +239,11 @@ class TimerSystem {
     countingDown() {
         // Decrement the number of seconds by converting the moment duration object back to integer then decrementing
         var nextSeconds = this.timeLeft.asSeconds();
-        if(nextSeconds===0) return false;
+        if(nextSeconds===0) {
+            this.pauseTimer();
+            app.controllers.renderFinished1of2();
+            return false;
+        }
         nextSeconds--;
 
         // Store the number of seconds as moment duration object
