@@ -111,10 +111,13 @@ class App {
                 document.querySelector(".content").append(nodes);
             } else {
                 // Questions are done, so let's pause the countdown timer and render the Finished slides
+                // Workaround: Penalty didn't apply. So wait for any penalty to be applied to timer, before pausing timer
+                // Todo: Review; Functional JS array method forEach
+                document.querySelectorAll(".question button").forEach(el=>{ el.disabled = true });
                 setTimeout( ()=> { 
                     timerSystem.pauseTimer(); 
                     app.controllers.renderFinished1of2();
-                }, 1100); // Workaround: Wait for any penalty to be applied to timer, before pausing timer
+                }, 1100);
             }
         }, // renderQuestion
         
@@ -125,6 +128,11 @@ class App {
             var generatedHtml = parameterizedTemplate({score: timerSystem.getSeconds()});
             var nodes = Internal.htmlToDom(generatedHtml);
             nodes.querySelector("button").addEventListener("click", ()=>{
+                var playerName = document.querySelector(".finished1of2 input").value;
+                if(playerName.length) {
+                    var playerScore = timerSystem.getSeconds;
+                    ScoreSystem.setScore(playerName, playerScore);
+                }
                 app.controllers.renderFinished2of2();
             });
 
@@ -133,9 +141,13 @@ class App {
         },
         renderFinished2of2() {
             // Handlebar JS
+            var highScoreCells = ScoreSystem.getHighest();
+            var {name, score} = highScoreCells;
+            var highScoreLine = `1. ${name} - ${score}`;
+
             var template = app.views.finished2of2;
             var parameterizedTemplate = Handlebars.compile(template);
-            var generatedHtml = parameterizedTemplate({highScore:20});
+            var generatedHtml = parameterizedTemplate({highScoreLine}); // Todo: Review; Sugar Syntax; Short-hand object {a} is the same as {a:a}
             var nodes = Internal.htmlToDom(generatedHtml);
 
             nodes.querySelector("button.go-back").addEventListener("click", ()=>{
@@ -187,7 +199,7 @@ class App {
         "finished2of2": `
             <div class="finished2of2">
                 <h1>High scores</h1>
-                <div class="high-score">{{highScore}}</div>
+                <div class="high-score">{{highScoreLine}}</div>
                 <div class="form-group">
                     <button class="go-back btn btn-primary display-inline">Go back</button>
                     <button class="clear-high-scores btn btn-primary display-inline">Clear high scores</button>
@@ -309,6 +321,7 @@ var ScoreSystem = {
      * @param {integer} score       The score 
      */
     setScore: function(playerName, playerScore) {
+        debugger;
         // Try to load the old score
         var scoresArray = localStorage.getItem("scores");
         
