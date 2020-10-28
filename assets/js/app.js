@@ -130,7 +130,7 @@ class App {
             nodes.querySelector("button").addEventListener("click", ()=>{
                 var playerName = document.querySelector(".finished1of2 input").value;
                 if(playerName.length) {
-                    var playerScore = timerSystem.getSeconds;
+                    var playerScore = timerSystem.getSeconds();
                     ScoreSystem.setScore(playerName, playerScore);
                 }
                 app.controllers.renderFinished2of2();
@@ -321,7 +321,6 @@ var ScoreSystem = {
      * @param {integer} score       The score 
      */
     setScore: function(playerName, playerScore) {
-        debugger;
         // Try to load the old score
         var scoresArray = localStorage.getItem("scores");
         
