@@ -7,7 +7,7 @@
             "yellow",
             "green"
         ],
-        "correct": 0
+        "correctAnswer": 0
     },
     {
         "question": "Which is blue?",
@@ -17,7 +17,7 @@
             "yellow",
             "green"
         ],
-        "correct": 1
+        "correctAnswer": 1
     },
     {
         "question": "Which is yellow?",
@@ -27,6 +27,6 @@
             "yellow",
             "green"
         ],
-        "correct": 2
+        "correctAnswer": 2
     }
 ]

@@ -53,8 +53,32 @@ class App {
                 var parameterizedTemplate = Handlebars.compile(template);
                 var model = questions[questionPointer];
                 model.questionId = questionPointer;
-                var generatedHTML = parameterizedTemplate(model);
-                document.querySelector(".content").innerHTML = generatedHTML;
+                var generatedHtml = parameterizedTemplate(model);
+
+                // But Handlebar JS gives you a string, not DOM nodes that can have addEventListener, so let's parse Dom with the browser web API
+                var nodes = Internal.htmlToDom(generatedHtml);
+
+                // Add onclick to answer buttons
+                // Todo: Review; array.forEach
+                nodes.querySelectorAll("button").forEach( (buttonEl)=>{ 
+                    buttonEl.onclick = (event) => {
+                        var questionId = parseInt(buttonEl.closest(".question").getAttribute("data-question-id"));
+                        var buttonId = parseInt(buttonEl.getAttribute("data-button-id"));
+
+                        // Update Correct! or Wrong! at the model for rendering next question
+                        var wasICorrect = Internal.checkAnswer(buttonId, questionId);
+                        if(wasICorrect)
+                            app.models.wasICorrect = "Correct!";
+                        else
+                            app.models.wasICorrect = "Wrong!";
+                        
+                        // Render next question or finished slide
+                        app.controllers.renderQuestion();
+                    }
+                });
+                
+                document.querySelector(".content").innerHTML = "";
+                document.querySelector(".content").append(nodes);
             } else {
                 alert("Finished questions!");
             }
@@ -62,7 +86,7 @@ class App {
     }
 
     models = {
-        lastAnswered: "",
+        wasICorrect: "",
         questionPointer: 0,
         questions: {}
     }
@@ -74,7 +98,7 @@ class App {
                 <h1>{{question}}</h1>
                 <div class="form-group">
                 {{#each answers}}
-                    <button class="btn btn-primary display-block">{{getIndex @index}} {{this}}</button>
+                    <button class="btn btn-primary display-block" data-button-id="{{@index}}">{{getHumanReadableIndex @index}} {{this}}</button>
                 {{/each}}
                 </div>
                 <hr>
@@ -91,14 +115,46 @@ class App {
  * 
  */
 var Internal = {
+
+    /**
+     * Convert html string to DOM nodes
+     * 
+     * @function htmlToDom
+     * @param {string} html
+     * 
+     */
+    htmlToDom: function(html) {
+        // return (new DOMParser()).parseFromString(html, "text/xml");
+        // return document.createElement("div").innerHTML = html;
+        return (new DOMParser()).parseFromString(html, "text/html").body.firstChild;
+    },
+
+
+    /**
+     * Check the button index whether it matches the "correctAnswer" numerical field for the question in the JSON file
+     * 
+     * @method checkAnswer
+     */
+    checkAnswer: (buttonId, questionId) => {
+        // buttonId -> correctAnswer
+        var currentQuestion = app.models.questions[questionId];
+        if(quickTester.assert(typeof questionId==="number", "questionId is wrong")) debugger;
+        if(quickTester.assert(currentQuestion.answers.length, "currentQuestion is wrong")) debugger;
+        if(quickTester.assert(typeof buttonId==="number", "buttonId is wrong")) debugger;
+
+        var {correctAnswer} = currentQuestion;
+        return buttonId === correctAnswer;
+    },
+    
     // Todo: Review; Tricky; Handlebar JS custom helper
     addHandlebarsHelpers: ()=> {
-        Handlebars.registerHelper("getIndex", function(index) {
+        // getHumanReadableIndex converts index 0, 1, 2, etc. => To 1., 2., etc
+        Handlebars.registerHelper("getHumanReadableIndex", function(index) {
             return parseInt(index)+1 + ".";
         });
 
         Handlebars.registerHelper("wasICorrect", function() {
-            return app.models.lastAnswered;
+            return app.models.wasICorrect;
         });
     },
     readQuestionBank: (filename)=>{
