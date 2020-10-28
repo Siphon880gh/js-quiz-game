@@ -343,18 +343,17 @@ var ScoreSystem = {
                 }
             });
 
-            // we don't touch the player's old score if he/she couldn't beat it, so skip out of the function
-            if(playerOldScoreWasHigher) return false;
-
         } else {
             // Init a scores array because this is the first time saving scores on this machine
             scoresArray = [];
         }
 
         // Add player score to the local machine and rank them from highest to lowest
-        scoresArray.push({name:playerName, score:playerScore});
-        scoresArray = this.sort(scoresArray);
-        localStorage.setItem( "scores", JSON.stringify(scoresArray) );
+        if(!playerOldScoreWasHigher) {
+            scoresArray.push({name:playerName, score:playerScore});
+            scoresArray = this.sort(scoresArray);
+            localStorage.setItem( "scores", JSON.stringify(scoresArray) );
+        }
 
         updateRankingModal();
 
