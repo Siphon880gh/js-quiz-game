@@ -1,9 +1,50 @@
+/* Test CSS */
 body::after {
     content: "Connected CSS";
 }
 
+/* Reset CSS */
 :root {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+}
+
+/* Color theme */
+:root {
+  --theme: #361C74;
+  --complement: #D9D3E9;
+  --grab_attention: #BD60E7;
+}
+
+/* Utility classes */
+.display-block {
+    display: block;
+}
+.display-inline-block {
+    display: inline-block;
+}
+
+/* General UI */
+.btn-primary {
+    width: 150px;
+    margin: 10px 0;
+    border-color: var(--theme) !important;
+    background-color: var(--theme) !important;
+    transition: background-color 750ms, border-color 750ms;
+    overflow-x: scroll;
+    text-align: left;
+}
+.btn-primary:hover, .btn-primary:active, .btn-primary:visited, .btn-primary:focus, .btn-primary:focus-within, .btn-primary:link {
+    background-color: var(--grab_attention) !important;
+    border-color: var(--grab_attention) !important;
+}
+
+/* Question */
+.question hr {
+    margin: 20px 0 10px 0;
+}
+.question .text-feedback {
+    color: lightgray;
+    font-style: italic;
 }

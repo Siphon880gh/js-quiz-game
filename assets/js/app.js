@@ -1,4 +1,10 @@
 /**
+ * @overview index.html opens app.js
+ * @dependencies you need to load handlebar.js and moment.js first
+ * @author assigned to Weng Fei Fung
+ */
+
+/**
  * Test that the app.js file is connected
  * 
  * @name ConnectedJS
@@ -17,20 +23,47 @@ class App {
     constructor() {
         console.log("Init App class");
 
+        // Init Handlebar with helpers that format the answers
+        Internal.addHandlebarsHelpers();
+
         // Read question bank from .json file into App model
         var questionBank = Internal.readQuestionBank("html-questions");
         // TODO: Indusry standards; Is this how unit tests, etc are performed? Find out once we reach lessons on testing 
         if(quickTester.assert(questionBank.length && questionBank[0], "questionBank should have >1 objects and index 0 should have a question and answers")) debugger;
-        this.models.default = questionBank;
+        this.models.questions = questionBank;
     }
 
-    controllers = {}
+    controllers = {
+        // Todo: Review; Tricky; New to this; Handlebar takes in a template, makes it into a function, then that function receives data to render the template
+        renderQuestion: function() {
+            var template = app.views.question;
+            var parameterizedTemplate = Handlebars.compile(template);
+            var model = app.models.questions[0];
+            var generatedHTML = parameterizedTemplate(model);
+            document.querySelector(".content").innerHTML = generatedHTML;
+        }
+    }
 
     models = {
-        default: {}
+        lastAnswered: "",
+        questions: {}
     }
 
-    views = {}
+    // Todo: Review; Tricky; New to this; Handlebar template with array and custom helper
+    views = {
+        "question": `
+            <div class="question">
+                <h1>{{question}}</h1>
+                <div class="form-group">
+                {{#each answers}}
+                    <button class="btn btn-primary display-block">{{getIndex @index}} {{this}}</button>
+                {{/each}}
+                </div>
+                <hr>
+                <span class="text-feedback">{{wasICorrect}}</span>
+            </div>
+        `
+    }
 } // App
 
 /**
@@ -40,6 +73,16 @@ class App {
  * 
  */
 var Internal = {
+    // Todo: Review; Tricky; Handlebar JS custom helper
+    addHandlebarsHelpers: ()=> {
+        Handlebars.registerHelper("getIndex", function(index) {
+            return parseInt(index)+1 + ".";
+        });
+
+        Handlebars.registerHelper("wasICorrect", function() {
+            return app.models.lastAnswered;
+        });
+    },
     readQuestionBank: (filename)=>{
         var questionBank = [];
 
