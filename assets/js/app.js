@@ -55,12 +55,12 @@ class App {
         // Read question bank from .json file into App model
         var questionBank = Internal.readQuestionBank("html-questions");
         // TODO: Indusry standards; Is this how unit tests, etc are performed? Find out once we reach lessons on testing 
-        if(quickTester.assert(questionBank.length && questionBank[0], "questionBank should have >1 objects and index 0 should have a question and answers")) debugger;
+        if (quickTester.assert(questionBank.length && questionBank[0], "questionBank should have >1 objects and index 0 should have a question and answers")) debugger;
         this.models.questions = questionBank;
     }
 
     controllers = {
-        
+
         renderStart: function() {
             var template = app.views.startSlide;
             var parameterizedTemplate = Handlebars.compile(template);
@@ -72,8 +72,8 @@ class App {
         // Todo: Review; Sugar Syntax; Plucking from an object, aka destructuring object
         renderQuestion: function() {
             // Where we are in the questions
-            var {questionPointer, questions} = app.models;
-            if(questionPointer < questions.length) {
+            var { questionPointer, questions } = app.models;
+            if (questionPointer < questions.length) {
                 app.models.questionPointer++;
 
                 // Handlebar JS
@@ -88,14 +88,14 @@ class App {
 
                 // Add onclick to answer buttons
                 // Todo: Review; array.forEach
-                nodes.querySelectorAll("button").forEach( (buttonEl)=>{ 
+                nodes.querySelectorAll("button").forEach((buttonEl) => {
                     buttonEl.onclick = (event) => {
                         var questionId = parseInt(buttonEl.closest(".question").getAttribute("data-question-id"));
                         var buttonId = parseInt(buttonEl.getAttribute("data-button-id"));
 
                         // Update Correct! or Wrong! at the model for rendering next question
                         var wasICorrect = Internal.checkAnswer(buttonId, questionId);
-                        if(wasICorrect)
+                        if (wasICorrect)
                             app.models.wasICorrect = "Correct!";
                         else {
                             app.models.wasICorrect = "Wrong!";
@@ -106,30 +106,30 @@ class App {
                         app.controllers.renderQuestion();
                     }
                 });
-                
+
                 document.querySelector(".content").innerHTML = ""; // Reset HTML
                 document.querySelector(".content").append(nodes);
             } else {
                 // Questions are done, so let's pause the countdown timer and render the Finished slides
                 // Workaround: Penalty didn't apply. So wait for any penalty to be applied to timer, before pausing timer
                 // Todo: Review; Functional JS array method forEach
-                document.querySelectorAll(".question button").forEach(el=>{ el.disabled = true });
-                setTimeout( ()=> { 
-                    timerSystem.pauseTimer(); 
+                document.querySelectorAll(".question button").forEach(el => { el.disabled = true });
+                setTimeout(() => {
+                    timerSystem.pauseTimer();
                     app.controllers.renderFinished1of2();
                 }, 1100);
             }
         }, // renderQuestion
-        
+
         renderFinished1of2() {
             // Handlebar JS
             var template = app.views.finished1of2;
             var parameterizedTemplate = Handlebars.compile(template);
-            var generatedHtml = parameterizedTemplate({score: timerSystem.getSeconds()});
+            var generatedHtml = parameterizedTemplate({ score: timerSystem.getSeconds() });
             var nodes = Internal.htmlToDom(generatedHtml);
-            nodes.querySelector("button").addEventListener("click", ()=>{
+            nodes.querySelector("button").addEventListener("click", () => {
                 var playerName = document.querySelector(".finished1of2 input").value;
-                if(playerName.length) {
+                if (playerName.length) {
                     var playerScore = timerSystem.getSeconds();
                     ScoreSystem.setScore(playerName, playerScore);
                 }
@@ -142,20 +142,20 @@ class App {
         renderFinished2of2() {
             // Handlebar JS
             var highScoreCells = ScoreSystem.getHighest();
-            var {name, score} = highScoreCells;
+            var { name, score } = highScoreCells;
             var highScoreLine = `1. ${name} - ${score}`;
 
             var template = app.views.finished2of2;
             var parameterizedTemplate = Handlebars.compile(template);
-            var generatedHtml = parameterizedTemplate({highScoreLine}); // Todo: Review; Sugar Syntax; Short-hand object {a} is the same as {a:a}
+            var generatedHtml = parameterizedTemplate({ highScoreLine }); // Todo: Review; Sugar Syntax; Short-hand object {a} is the same as {a:a}
             var nodes = Internal.htmlToDom(generatedHtml);
 
-            nodes.querySelector("button.go-back").addEventListener("click", ()=>{
+            nodes.querySelector("button.go-back").addEventListener("click", () => {
                 Internal.restartQuestions();
                 app.controllers.renderStart();
             });
 
-            nodes.querySelector("button.clear-high-scores").addEventListener("click", ()=>{
+            nodes.querySelector("button.clear-high-scores").addEventListener("click", () => {
                 ScoreSystem.clearScores();
                 alert("Scores cleared!");
                 document.querySelector(".high-score").textContent = "";
@@ -222,24 +222,24 @@ class TimerSystem {
 
     constructor(timerEl, seconds) {
         this.timerEl = timerEl;
-        
+
         // Initial instance counting down depends on how many questions there are
         // Store the number of seconds as moment duration object
         this.timeLeft = moment.duration(seconds, "seconds");
-        
+
         // Workaround: Avoid trimming for values less than 60 seconds
         var timeLeftFormatted = this.timeLeft.format("mm:ss", { trim: false }); // "00:05"
         this.timerEl.textContent = timeLeftFormatted;
 
         // Every other instance counting down
-        if(window.timerCountingDown) clearInterval(window.timerCountingDown);
+        if (window.timerCountingDown) clearInterval(window.timerCountingDown);
         window.timerCountingDown = setInterval(this.countingDown.bind(this), 1000); // Workaround: *.this reference was lost
     }
 
     countingDown() {
         // Decrement the number of seconds by converting the moment duration object back to integer then decrementing
         var nextSeconds = this.timeLeft.asSeconds();
-        if(nextSeconds===0) {
+        if (nextSeconds === 0) {
             this.pauseTimer();
             app.controllers.renderFinished1of2();
             return false;
@@ -266,7 +266,7 @@ class TimerSystem {
     }
 
     pauseTimer() {
-        if(window.timerCountingDown) clearInterval(window.timerCountingDown);
+        if (window.timerCountingDown) clearInterval(window.timerCountingDown);
     }
 
     resumeTimer() {
@@ -281,7 +281,7 @@ class TimerSystem {
      */
     subtractTimer(bySeconds) {
         this.pauseTimer();
-        
+
         // Decrement the number of seconds by converting the moment duration object back to integer then decrementing
         var nextSeconds = this.timeLeft.asSeconds();
         nextSeconds -= bySeconds;
@@ -299,77 +299,77 @@ class TimerSystem {
  * @class ScoreSystem
  */
 var ScoreSystem = {
-    clearScores: function() {
-        localStorage.removeItem("scores");
-        updateRankingModal();
-    },
-    
-    /**
-     * Get player with the highest score
-     * 
-     * @method getHighest
-     * @returns {object}    object.name     {string}    Example: WFF
-     *                      object.score    {int}       Example: 70
-     */
-    getHighest: function() {
-        // Todo: Review; Tricky localStorage always stores as a string, so arrays need to be converted back and forth as JSON!
-        var scoresArray = localStorage.getItem("scores");
-        if(scoresArray) {
-            var array= JSON.parse(scoresArray)
-            return array[0];
-        }
-    },
+        clearScores: function() {
+            localStorage.removeItem("scores");
+            updateRankingModal();
+        },
 
-    /**
-     * 
-     * @param {string}  playerName   Player name, as an abbreviation with max 3 character length
-     * @param {integer} score       The score 
-     */
-    setScore: function(playerName, playerScore) {
-        // Try to load the old score
-        var scoresArray = localStorage.getItem("scores");
-        
-        // Filter the scores by including all other players, and if the player was previously recorded, then it will depend on whether he beat his/her old score
-        // Todo: Review; Fundamental; Functional JS leverages array methods such as map, filter, and reduce
-        if(scoresArray) {
-            scoresArray = JSON.parse(scoresArray);
-            var playerOldScoreWasHigher = false; // initially false
-            
-            scoresArray.filter(cell => {
-                if(cell.name!==playerName) return true; // we don't touch other players' scores that don't belong to the player
-                else if(cell.name===playerName && cell.score >= playerScore) { // we don't touch the player's old score if he/she couldn't beat it
-                    playerOldScoreWasHigher = true;
-                    return true;
-                }
-            });
+        /**
+         * Get player with the highest score
+         * 
+         * @method getHighest
+         * @returns {object}    object.name     {string}    Example: WFF
+         *                      object.score    {int}       Example: 70
+         */
+        getHighest: function() {
+            // Todo: Review; Tricky localStorage always stores as a string, so arrays need to be converted back and forth as JSON!
+            var scoresArray = localStorage.getItem("scores");
+            if (scoresArray) {
+                var array = JSON.parse(scoresArray)
+                return array[0];
+            }
+        },
 
-        } else {
-            // Init a scores array because this is the first time saving scores on this machine
-            scoresArray = [];
-        }
+        /**
+         * 
+         * @param {string}  playerName   Player name, as an abbreviation with max 3 character length
+         * @param {integer} score       The score 
+         */
+        setScore: function(playerName, playerScore) {
+            // Try to load the old score
+            var scoresArray = localStorage.getItem("scores");
 
-        // Add player score to the local machine and rank them from highest to lowest
-        if(!playerOldScoreWasHigher) {
-            scoresArray.push({name:playerName, score:playerScore});
-            scoresArray = this.sort(scoresArray);
-            localStorage.setItem( "scores", JSON.stringify(scoresArray) );
-        }
+            // Filter the scores by including all other players, and if the player was previously recorded, then it will depend on whether he beat his/her old score
+            // Todo: Review; Fundamental; Functional JS leverages array methods such as map, filter, and reduce
+            if (scoresArray) {
+                scoresArray = JSON.parse(scoresArray);
+                var playerOldScoreWasHigher = false; // initially false
 
-        updateRankingModal();
+                scoresArray.filter(cell => {
+                    if (cell.name !== playerName) return true; // we don't touch other players' scores that don't belong to the player
+                    else if (cell.name === playerName && cell.score >= playerScore) { // we don't touch the player's old score if he/she couldn't beat it
+                        playerOldScoreWasHigher = true;
+                        return true;
+                    }
+                });
 
-    }, // setScore
+            } else {
+                // Init a scores array because this is the first time saving scores on this machine
+                scoresArray = [];
+            }
+
+            // Add player score to the local machine and rank them from highest to lowest
+            if (!playerOldScoreWasHigher) {
+                scoresArray.push({ name: playerName, score: playerScore });
+                scoresArray = this.sort(scoresArray);
+                localStorage.setItem("scores", JSON.stringify(scoresArray));
+            }
+
+            updateRankingModal();
+
+        }, // setScore
 
 
-    // Sort the scores array from highest to lowest score
-    sort: function(arr) {
-        return arr.sort( function(cellLeft, cellRight) {
-            if(cellLeft.score > cellRight.score) return -1;
-            else if(cellLeft.score < cellRight.score) return 1;
-            else return 0; 
-        });
-    } // sort
+        // Sort the scores array from highest to lowest score
+        sort: function(arr) {
+                return arr.sort(function(cellLeft, cellRight) {
+                    if (cellLeft.score > cellRight.score) return -1;
+                    else if (cellLeft.score < cellRight.score) return 1;
+                    else return 0;
+                });
+            } // sort
 
-} // ScoreSystem
+    } // ScoreSystem
 
 /**
  * Internal variables and functions for the App class
@@ -379,87 +379,87 @@ var ScoreSystem = {
  */
 var Internal = {
 
-    // Todo: Review; Tricky; Handlebar JS custom helper
-    addHandlebarsHelpers: ()=> {
-        // getHumanReadableIndex converts index 0, 1, 2, etc. => To 1., 2., etc
-        Handlebars.registerHelper("getHumanReadableIndex", function(index) {
-            return parseInt(index)+1 + ".";
-        });
+        // Todo: Review; Tricky; Handlebar JS custom helper
+        addHandlebarsHelpers: () => {
+            // getHumanReadableIndex converts index 0, 1, 2, etc. => To 1., 2., etc
+            Handlebars.registerHelper("getHumanReadableIndex", function(index) {
+                return parseInt(index) + 1 + ".";
+            });
 
-        Handlebars.registerHelper("wasICorrect", function() {
-            return app.models.wasICorrect;
-        });
-    },
+            Handlebars.registerHelper("wasICorrect", function() {
+                return app.models.wasICorrect;
+            });
+        },
 
 
-    /**
-     * Check the button index whether it matches the "correctAnswer" numerical field for the question in the JSON file
-     * 
-     * @method checkAnswer
-     */
-    checkAnswer: (buttonId, questionId) => {
-        // buttonId -> correctAnswer
-        var currentQuestion = app.models.questions[questionId];
-        if(quickTester.assert(typeof questionId==="number", "questionId is wrong")) debugger;
-        if(quickTester.assert(currentQuestion.answers.length, "currentQuestion is wrong")) debugger;
-        if(quickTester.assert(typeof buttonId==="number", "buttonId is wrong")) debugger;
+        /**
+         * Check the button index whether it matches the "correctAnswer" numerical field for the question in the JSON file
+         * 
+         * @method checkAnswer
+         */
+        checkAnswer: (buttonId, questionId) => {
+            // buttonId -> correctAnswer
+            var currentQuestion = app.models.questions[questionId];
+            if (quickTester.assert(typeof questionId === "number", "questionId is wrong")) debugger;
+            if (quickTester.assert(currentQuestion.answers.length, "currentQuestion is wrong")) debugger;
+            if (quickTester.assert(typeof buttonId === "number", "buttonId is wrong")) debugger;
 
-        var {correctAnswer} = currentQuestion;
-        return buttonId === correctAnswer;
-    },
+            var { correctAnswer } = currentQuestion;
+            return buttonId === correctAnswer;
+        },
 
-    /**
-     * Convert html string to DOM nodes
-     * 
-     * @function htmlToDom
-     * @param {string} html
-     * 
-     */
-    htmlToDom: function(html) {
-        // return (new DOMParser()).parseFromString(html, "text/xml");
-        // return document.createElement("div").innerHTML = html;
-        return (new DOMParser()).parseFromString(html, "text/html").body.firstChild;
-    },
+        /**
+         * Convert html string to DOM nodes
+         * 
+         * @function htmlToDom
+         * @param {string} html
+         * 
+         */
+        htmlToDom: function(html) {
+            // return (new DOMParser()).parseFromString(html, "text/xml");
+            // return document.createElement("div").innerHTML = html;
+            return (new DOMParser()).parseFromString(html, "text/html").body.firstChild;
+        },
 
-    readQuestionBank: (filename)=>{
-        var questionBank = [];
+        readQuestionBank: (filename) => {
+            var questionBank = [];
 
-        // Get question bank from .json file
-        // TODO: Review; XMLHttpRequest is tricky and I have some trouble remembering the code. Second parameter is asynchronous mode.
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                var responseText = this.responseText;
-                try {
-                    questionBank = JSON.parse(responseText);
-                } catch(error) {
-                    alert("Error: Question bank file missing or unreadable");
-                    return [];
-                } // try-catch
-            } // if ready
-        }; // xhttp
-        xhttp.open("GET", "data/" + filename + ".json" , false); // async is false
-        xhttp.send();
-        
-        return questionBank;
-    },
+            // Get question bank from .json file
+            // TODO: Review; XMLHttpRequest is tricky and I have some trouble remembering the code. Second parameter is asynchronous mode.
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var responseText = this.responseText;
+                    try {
+                        questionBank = JSON.parse(responseText);
+                    } catch (error) {
+                        alert("Error: Question bank file missing or unreadable");
+                        return [];
+                    } // try-catch
+                } // if ready
+            }; // xhttp
+            xhttp.open("GET", "data/" + filename + ".json", false); // async is false
+            xhttp.send();
 
-    restartQuestions: function() {
-        app.models.questionPointer = 0;
-        app.models.wasICorrect = "";
-    },
+            return questionBank;
+        },
 
-    restartTimer: function() {
-        // Start timer based on how many questions there are (45 seconds a question)
-        var timerEl = document.querySelector(".clock");
-        var seconds = app.models.questions.length * 30;
-        window.timerSystem = new TimerSystem( timerEl, seconds );
+        restartQuestions: function() {
+            app.models.questionPointer = 0;
+            app.models.wasICorrect = "";
+        },
 
-    }
+        restartTimer: function() {
+            // Start timer based on how many questions there are
+            var timerEl = document.querySelector(".clock");
+            var seconds = app.models.questions.length * 20;
+            window.timerSystem = new TimerSystem(timerEl, seconds);
 
-} // Internals
+        }
 
- /**
+    } // Internals
+
+/**
  * Initialize App class
  * 
  * @name NewApp
