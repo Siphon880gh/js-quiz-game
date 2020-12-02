@@ -1,10 +1,10 @@
-Weng's Code Quiz
+Javascript Quiz Game
 ===
-Assigned to Weng Fei Fung. A quiz app that gives you a time limit based on how many questions there are. You get penalized 10 seconds everytime you answer wrong. It saves player names and scores.
+Made by Weng Fei Fung. A quiz app that gives you a time limit based on how many questions there are. You get penalized 10 seconds everytime you answer wrong. It saves player names and scores.
 
 Play
 ---
-[Game is here](//siphon880gh.github.io/ucla-code-quiz/).
+[Game is here](https://siphon880gh.github.io/js-quiz-game/).
 
 Technology used
 ---
